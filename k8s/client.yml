@@ -1,0 +1,37 @@
+apiVersion: apps/v1             
+kind: Deployment
+metadata:
+  name: client-deployment
+  labels:
+    app: client-deployment
+spec:
+  replicas: 1                        # Nombre de réplicats pod
+  selector:            
+    matchLabels:
+     app: client-template
+  template:        
+    metadata:
+      labels:           
+        app: client-template
+    spec:
+      containers:
+      - name: client-container
+        imagePullPolicy: IfNotPresent
+        image: client                                                                                   
+        ports:
+        - containerPort: 3000
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-srv
+spec:
+  type: NodePort     # Le type de service par défault c'est ClusterIP. Il faut précisé le nodePort 
+  selector:          # qui va chercher le label qui est dans gatsby_deploy.yml 
+    app: client-template            
+  ports:
+    - protocol: TCP
+      port: 3000              # port de l'extérieur: service
+      targetPort: 3000         # port de pod
+
+
